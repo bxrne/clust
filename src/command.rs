@@ -1,9 +1,30 @@
-// Command entry logic and state for clust
-
 #[derive(Debug, Clone, PartialEq)]
 pub enum CentralView {
     Pods,
     Help,
+}
+
+pub struct CommandState {
+    pub input: String,
+    pub view: CentralView,
+}
+
+impl CommandState {
+    pub fn new() -> Self {
+        CommandState {
+            input: String::new(),
+            view: CentralView::Pods,
+        }
+    }
+
+    pub fn handle_command(&mut self) {
+        match self.input.trim() {
+            ":pods" => self.view = CentralView::Pods,
+            ":help" => self.view = CentralView::Help,
+            _ => {},
+        }
+        self.input.clear();
+    }
 }
 
 #[cfg(test)]
@@ -29,7 +50,6 @@ mod tests {
     }
 
     // TEST: GIVEN CommandState WHEN :help command is entered THEN view switches to Help and input is cleared
-    // TEST: GIVEN CommandState WHEN :help command is entered THEN view switches to Help and input is cleared
     #[test]
     fn test_handle_command_help() {
         let mut state = CommandState::new();
@@ -40,7 +60,6 @@ mod tests {
     }
 
     // TEST: GIVEN CommandState WHEN unknown command is entered THEN view does not change and input is cleared
-    // TEST: GIVEN CommandState WHEN unknown command is entered THEN view does not change and input is cleared
     #[test]
     fn test_handle_command_unknown() {
         let mut state = CommandState::new();
@@ -49,29 +68,6 @@ mod tests {
         // Should not change view
         assert_eq!(state.view, CentralView::Pods);
         assert_eq!(state.input, "");
-    }
-}
-
-pub struct CommandState {
-    pub input: String,
-    pub view: CentralView,
-}
-
-impl CommandState {
-    pub fn new() -> Self {
-        CommandState {
-            input: String::new(),
-            view: CentralView::Pods,
-        }
-    }
-
-    pub fn handle_command(&mut self) {
-        match self.input.trim() {
-            ":pods" => self.view = CentralView::Pods,
-            ":help" => self.view = CentralView::Help,
-            _ => {},
-        }
-        self.input.clear();
     }
 }
 

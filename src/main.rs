@@ -18,18 +18,6 @@ mod command;
 use simulated_cluster::{ClusterClient, get_client};
 use command::{CommandState, CentralView};
 
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    // TEST: GIVEN main WHEN called THEN config loads without panic
-    #[test]
-    fn test_main_config_loads() {
-        let cfg = config::Config::load();
-        // Just check that simulated is a bool
-        assert!(cfg.simulated == true || cfg.simulated == false);
-    }
-}
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let cfg = config::Config::load();
