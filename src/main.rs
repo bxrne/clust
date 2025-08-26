@@ -64,11 +64,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let detail_panel = Paragraph::new(vec![
                 Line::from(Span::styled(
                     status_text,
-                    Style::default().fg(Color::Yellow),
+                    Style::default().fg(Color::Yellow).add_modifier(ratatui::style::Modifier::BOLD),
                 )),
-                Line::from(Span::raw("Press 'q' to quit.")),
+                Line::from(Span::styled(
+                    "Press 'q' to quit.",
+                    Style::default().fg(Color::LightGreen).add_modifier(ratatui::style::Modifier::ITALIC),
+                )),
             ])
-            .block(Block::default().title("[clust]").borders(Borders::ALL))
+            .block(Block::default().title(Span::styled("[clust]", Style::default().fg(Color::Cyan).add_modifier(ratatui::style::Modifier::BOLD))).borders(Borders::ALL).border_style(Style::default().fg(Color::Cyan)))
             .alignment(Alignment::Left);
             f.render_widget(detail_panel, chunks[0]);
 
@@ -80,28 +83,37 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     } else {
                         vec!["No pods (no client)".to_string()]
                     };
-                    let pods_lines: Vec<Line> = pods.iter().map(|p| Line::from(Span::raw(p))).collect();
+                    let pods_lines: Vec<Line> = pods.iter().enumerate().map(|(i, p)| {
+                        Line::from(Span::styled(
+                            format!("{}: {}", i + 1, p),
+                            Style::default().fg(Color::LightMagenta).add_modifier(ratatui::style::Modifier::BOLD),
+                        ))
+                    }).collect();
                     let pods_paragraph = Paragraph::new(pods_lines)
-                        .block(Block::default().title("Pods").borders(Borders::ALL))
+                        .block(Block::default().title(Span::styled("Pods", Style::default().fg(Color::Magenta).add_modifier(ratatui::style::Modifier::BOLD))).borders(Borders::ALL).border_style(Style::default().fg(Color::Magenta)))
                         .alignment(Alignment::Left);
                     f.render_widget(pods_paragraph, chunks[1]);
                 }
                 CentralView::Help => {
                     let help_lines = vec![
-                        Line::from(Span::raw(":pods - show pods")),
-                        Line::from(Span::raw(":help - show help")),
+                        Line::from(Span::styled(":pods - show pods", Style::default().fg(Color::LightBlue).add_modifier(ratatui::style::Modifier::BOLD))),
+                        Line::from(Span::styled(":help - show help", Style::default().fg(Color::LightBlue).add_modifier(ratatui::style::Modifier::BOLD))),
+                        Line::from(Span::styled("Type a command below and press Enter.", Style::default().fg(Color::Gray).add_modifier(ratatui::style::Modifier::ITALIC))),
                     ];
                     let help_paragraph = Paragraph::new(help_lines)
-                        .block(Block::default().title("Help").borders(Borders::ALL))
+                        .block(Block::default().title(Span::styled("Help", Style::default().fg(Color::Blue).add_modifier(ratatui::style::Modifier::BOLD))).borders(Borders::ALL).border_style(Style::default().fg(Color::Blue)))
                         .alignment(Alignment::Left);
                     f.render_widget(help_paragraph, chunks[1]);
                 }
             }
 
             // Command entry box
-            let command_paragraph = Paragraph::new(command_state.input.clone())
-                .block(Block::default().title("Command").borders(Borders::ALL))
-                .alignment(Alignment::Left);
+            let command_paragraph = Paragraph::new(Span::styled(
+                command_state.input.clone(),
+                Style::default().fg(Color::White).bg(Color::DarkGray).add_modifier(ratatui::style::Modifier::BOLD),
+            ))
+            .block(Block::default().title(Span::styled("Command", Style::default().fg(Color::Green).add_modifier(ratatui::style::Modifier::BOLD))).borders(Borders::ALL).border_style(Style::default().fg(Color::Green)))
+            .alignment(Alignment::Left);
             f.render_widget(command_paragraph, chunks[2]);
         })?;
 
