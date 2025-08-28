@@ -1,11 +1,19 @@
 use serde::{Deserialize, Serialize};
 use std::{fs};
+use whoami;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Config {
     pub simulated: bool,
+    pub kube: KubeConfig,
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct KubeConfig {
+    pub default_ctx: String,
+    pub clusters: Vec<String>,
+    pub users: Vec<String>,
+}
 
 impl Config {
     pub fn load() -> Self {
@@ -17,10 +25,16 @@ impl Config {
             let content = fs::read_to_string(&path)
                 .unwrap_or_else(|_| panic!("Could not read {:?}", path));
             toml::from_str(&content)
-                .unwrap_or_else(|_| panic!("Invalid TOML in {:?}", path))
+                .unwrap_or_else(|e| panic!("Invalid TOML in {:?}: {}", path, e))
         } else {
             // Create default config if not exists
-            let default = Config { simulated: false };
+            let current_user = whoami::username();
+            let default_kube = KubeConfig{ 
+                default_ctx: "simulated".to_string(), 
+                clusters: vec!["simulated".to_string()], 
+                users: vec![current_user],
+            };
+            let default = Config { kube: default_kube, simulated: true };
             let toml_str = toml::to_string(&default).expect("Could not serialize default config");
             fs::create_dir_all(path.parent().unwrap())
                 .expect("Could not create config directory");

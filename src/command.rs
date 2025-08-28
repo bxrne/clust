@@ -1,5 +1,6 @@
 #[derive(Debug, Clone, PartialEq)]
 pub enum CentralView {
+    Ctxs,
     Pods,
     Help,
 }
@@ -20,6 +21,7 @@ impl CommandState {
     pub fn handle_command(&mut self) {
         match self.input.trim() {
             ":pods" => self.view = CentralView::Pods,
+            ":ctx" => self.view = CentralView::Ctxs,
             ":help" => self.view = CentralView::Help,
             _ => {},
         }
@@ -56,6 +58,17 @@ mod tests {
         state.input = ":help".to_string();
         state.handle_command();
         assert_eq!(state.view, CentralView::Help);
+        assert_eq!(state.input, "");
+    }
+
+    // TEST: GIVEN CommandState WHEN :ctx command is entered THEN view switches to Ctxs and input
+    // is cleared 
+    #[test]
+    fn test_handle_command_ctx() {
+        let mut state = CommandState::new();
+        state.input = ":ctx".to_string();
+        state.handle_command();
+        assert_eq!(state.view, CentralView::Ctxs);
         assert_eq!(state.input, "");
     }
 
