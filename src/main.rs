@@ -144,6 +144,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 CentralView::Help => {
                     let help_lines = vec![
                         Line::from(Span::styled(
+                            "Available commands:",
+                            Style::default()
+                                .fg(Color::White)
+                                .add_modifier(ratatui::style::Modifier::UNDERLINED),
+                        )),
+                        Line::from(Span::styled(
+                            ":q - quit application",
+                            Style::default()
+                                .fg(Color::LightBlue)
+                                .add_modifier(ratatui::style::Modifier::BOLD),
+                        )),
+                        Line::from(Span::styled(
+                            ":togglesim - toggle simulated mode",
+                            Style::default()
+                                .fg(Color::LightBlue)
+                                .add_modifier(ratatui::style::Modifier::BOLD),
+                        )),
+                        Line::from(Span::styled(
                             ":pods - show pods",
                             Style::default()
                                 .fg(Color::LightBlue)

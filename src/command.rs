@@ -5,9 +5,15 @@ pub enum CentralView {
     Help,
 }
 
+pub enum ModeState {
+    Sim,
+    Kube,
+}
+
 pub struct CommandState {
     pub input: String,
     pub view: CentralView,
+    pub mode: ModeState,
 }
 
 impl CommandState {
@@ -15,11 +21,16 @@ impl CommandState {
         CommandState {
             input: String::new(),
             view: CentralView::Pods,
+            mode: ModeState::Kube,
         }
     }
 
     pub fn handle_command(&mut self) {
         match self.input.trim() {
+            ":togglesim" => match self.mode {
+                ModeState::Sim => self.mode = ModeState::Kube,
+                ModeState::Kube => self.mode = ModeState::Sim,
+            },
             ":pods" => self.view = CentralView::Pods,
             ":ctx" => self.view = CentralView::Ctxs,
             ":help" => self.view = CentralView::Help,
